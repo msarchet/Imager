@@ -11,7 +11,7 @@
 
     public class Generator
     {
-        private static ConcurrentDictionary<string, Image> ImageCache = new ConcurrentDictionary<string, Image>();
+        private static ConcurrentDictionary<string, byte[]> ImageCache = new ConcurrentDictionary<string, byte[]>();
         private static readonly Dictionary<string, ImageFormat> MimeToFormat;
         private static readonly Dictionary<ImageFormat, string> FormatToMime;
 
@@ -50,9 +50,9 @@
         /// <param name="width">Width of the image in pixels</param>
         /// <param name="height">Height of the pixels</param>
         /// <returns>An Image with the specificed requirements</returns>
-        public async static Task<Image> GenerateAsync(string MimeType, int width, int height)
+        public async static Task<Image> GenerateAsync(string mimetype, int width, int height)
         {
-            var imageFormat = MimeToFormat[MimeType];
+            var imageFormat = MimeToFormat[mimetype];
             return await GenerateAsync(imageFormat, width, height);
         }
 
@@ -65,15 +65,44 @@
         /// <returns></returns>
         public async static Task<Image> GenerateAsync(ImageFormat format, int width, int height)
         {
-            var stream = new MemoryStream();
-            using (var bitmap = new Bitmap(width, height))
+            var bytes = await GenerateAsBytesAsync(format, width, height);
+            return BytesToImage(bytes);
+        }
+
+        public async static Task<byte[]> GenerateAsBytesAsync(string mimetype, int width, int height)
+        {
+            var imageFormat = MimeToFormat[mimetype];
+            return await GenerateAsBytesAsync(imageFormat, width, height);
+
+        }
+
+        public async static Task<byte[]> GenerateAsBytesAsync(ImageFormat format, int width, int height)
+        {
+            byte[] existingImage;
+            var key = ImageId(format, width, height);
+            using (var stream = new MemoryStream())
             {
-                bitmap.Save(stream, format);
-                var savedImage = Image.FromStream(stream);
-                var key = ImageId(format, width, height);
-                ImageCache.AddOrUpdate(key, savedImage, (k, v) => savedImage);
-                return savedImage;
+                if (ImageCache.TryGetValue(key, out existingImage))
+                {
+                    return existingImage;
+                }
+
+                using (var bitmap = new Bitmap(width, height))
+                {
+                    bitmap.Save(stream, format);
+                    existingImage = stream.ToArray();
+                    ImageCache.AddOrUpdate(key, existingImage, (k, v) => existingImage);
+                }
+
+                return existingImage;
             }
+        }
+
+        public static Image BytesToImage(byte[] bytes)
+        {
+            var ms = new MemoryStream(bytes);
+            var returnImage = Image.FromStream(ms);
+            return returnImage;
         }
 
         private static string ImageId(ImageFormat format, int width, int height)
