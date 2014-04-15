@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Michael Sarchet</authors>
+    <owners>Michael Sarchet</owners>
+    <licenseUrl>https://raw.githubusercontent.com/msarchet/Imager/master/LICENSE</licenseUrl>
+    <projectUrl>http://msarchet.com/Imager</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library for generating test images</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Image Generation Static Byte Util Utility Utilities</tags>
+  </metadata>
+</package>

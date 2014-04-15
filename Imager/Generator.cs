@@ -59,16 +59,23 @@
         /// <summary>
         /// Create an Image
         /// </summary>
-        /// <param name="format">A</param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
+        /// <param name="format">An ImageFormat</param>
+        /// <param name="width">Width of the image in pixels</param>
+        /// <param name="height">Height of the image in pixels</param>
+        /// <returns>An Image with the specified requirements</returns>
         public async static Task<Image> GenerateAsync(ImageFormat format, int width, int height)
         {
             var bytes = await GenerateAsBytesAsync(format, width, height);
             return BytesToImage(bytes);
         }
 
+        /// <summary>
+        /// Create an image as a byte array
+        /// </summary>
+        /// <param name="MimeType">Mime Type</param>
+        /// <param name="width">Width of the image in pixels</param>
+        /// <param name="height">Height of the pixels</param>
+        /// <returns></returns>
         public async static Task<byte[]> GenerateAsBytesAsync(string mimetype, int width, int height)
         {
             var imageFormat = MimeToFormat[mimetype];
@@ -76,7 +83,19 @@
 
         }
 
-        public async static Task<byte[]> GenerateAsBytesAsync(ImageFormat format, int width, int height)
+        /// <summary>
+        /// Create an image as a byte array
+        /// </summary>
+        /// <param name="format">An ImageFormat</param>
+        /// <param name="width">Width of the image in pixels</param>
+        /// <param name="height">Height of the pixels</param>
+        /// <returns></returns>
+        public static Task<byte[]> GenerateAsBytesAsync(ImageFormat format, int width, int height)
+        {
+            return new Task<byte[]>(() => GenerateAsBytes(format, width, height));
+        }
+
+        private static byte[] GenerateAsBytes(ImageFormat format, int width, int height)
         {
             byte[] existingImage;
             var key = ImageId(format, width, height);
@@ -97,7 +116,11 @@
                 return existingImage;
             }
         }
-
+        /// <summary>
+        /// Convery a byte array to an image
+        /// </summary>
+        /// <param name="bytes">The bytes for the image</param>
+        /// <returns>An Image from the bytes</returns>
         public static Image BytesToImage(byte[] bytes)
         {
             var ms = new MemoryStream(bytes);
