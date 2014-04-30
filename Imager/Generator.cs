@@ -95,7 +95,14 @@
             return new Task<byte[]>(() => GenerateAsBytes(format, width, height));
         }
 
-        private static byte[] GenerateAsBytes(ImageFormat format, int width, int height)
+        /// <summary>
+        /// Create an image as a byte array 
+        /// </summary>
+        /// <param name="format">An ImageFormat</param>
+        /// <param name="width">Width of the image in pixels</param>
+        /// <param name="height">Height of the pixels</param>
+        /// <returns>A byte array representaion of the image</returns>
+        public static byte[] GenerateAsBytes(ImageFormat format, int width, int height)
         {
             byte[] existingImage;
             var key = ImageId(format, width, height);
@@ -133,7 +140,7 @@
             return string.Format("{0}{1}{2}", FormatToMime[format], width, height);
         }
 
-        private static string GetMimeType(ImageFormat format)
+        public static string GetMimeType(ImageFormat format)
         {
             if (format.Equals(ImageFormat.Bmp))
             {
